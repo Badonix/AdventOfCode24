@@ -23,11 +23,33 @@ func main() {
 		line := scanner.Text()
 		list := strings.Split(line, " ")
 		numArray := convertArrayOfStringsToInts(list)
-		if checkRange(numArray) && isMonotonic(numArray) {
+		if isSafeWithOneRemoval(numArray) {
 			count++
 		}
 	}
 	fmt.Println(count)
+}
+
+func isSafe(list []int) bool {
+	return checkRange(list) && isMonotonic(list)
+}
+
+func isSafeWithOneRemoval(list []int) bool {
+	if isSafe(list) {
+		return true
+	}
+	for i := 0; i < len(list); i++ {
+		newList := make([]int, 0, len(list)-1)
+		for j := 0; j < len(list); j++ {
+			if j != i {
+				newList = append(newList, list[j])
+			}
+		}
+		if isSafe(newList) {
+			return true
+		}
+	}
+	return false
 }
 
 func checkRange(list []int) bool {
