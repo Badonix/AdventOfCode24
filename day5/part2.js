@@ -8,22 +8,36 @@ fs.readFile('input.txt', 'utf-8', (err, data) => {
   let count = 0
   updates.forEach((update) => {
     if (!checkUpdate(update, rules)) {
-      let res = permutations(update.split(','), 0, rules)
-      console.log(res)
+      let res = sortByRules(update.split(','), rules)
+      count += Number(res[(res.length - 1) / 2])
     }
   })
   console.log(count)
 })
-function permutations(arr, idx, hashmap) {
-  if (idx === arr.length && checkUpdate(arr, hashmap)) {
-    return arr
-  }
 
-  for (let i = idx; i < arr.length; i++) {
-    swap(arr, idx, i)
-    permutations(arr, idx + 1, hashmap)
-    swap(arr, idx, i)
+function sortByRules(input, rules) {
+  function getPrecedenceMap(rules) {
+    const precedence = {}
+    for (const [key, values] of Object.entries(rules)) {
+      if (!precedence[key]) precedence[key] = new Set()
+      for (const value of values) {
+        if (!precedence[value]) precedence[value] = new Set()
+        precedence[value].add(key)
+      }
+    }
+    return precedence
   }
+  const precedenceMap = getPrecedenceMap(rules)
+  function compare(a, b) {
+    if (precedenceMap[a] && precedenceMap[a].has(b)) {
+      return -1
+    }
+    if (precedenceMap[b] && precedenceMap[b].has(a)) {
+      return 1
+    }
+    return 0
+  }
+  return input.sort(compare)
 }
 
 const checkUpdate = (update, hashmap) => {
@@ -57,8 +71,4 @@ const generateMap = (rules) => {
     }
   })
   return hashmap
-}
-
-function swap(arr, i, j) {
-  ;[arr[i], arr[j]] = [arr[j], arr[i]]
 }
