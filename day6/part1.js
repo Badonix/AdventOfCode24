@@ -83,7 +83,9 @@ fs.readFile('input.txt', 'utf-8', (err, data) => {
       rotate()
     }
     console.log('MOVING')
-    move()
+    if (!frontIsOut()) {
+      move()
+    }
   }
 
   console.log(map.map((row) => row.join('')).join('\n'))
